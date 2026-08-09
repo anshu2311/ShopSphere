@@ -1,9 +1,10 @@
 import { IoMdClose } from "react-icons/io";
+import CartContents from "../Cart/CartContents";
 
 const CartDrawer = ({ drawerOpen, toggleCartDrawer}) => {
   return (
     <div 
-     className={`fixed top-0 right-0 w-3/4 sm:w-1/2 md:w-1/4 h-full bg-white shadow-lg transform transition-transform duration-300 flex flex-col ${drawerOpen ? "translate-x-0" : "translate-x-full"
+     className={`fixed top-0 right-0 w-3/4 sm:w-1/2 md:w-[30rem] h-full bg-white shadow-lg transform transition-transform duration-300 flex flex-col ${drawerOpen ? "translate-x-0" : "translate-x-full"
      }`}
     >
     {/*close button*/}
@@ -12,11 +13,14 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer}) => {
       <IoMdClose className="h-6 w-6 text-gray-600" />
      </button>
     </div>
+
     {/*Cart contents with scrollable area*/}
     <div className="flex-1 p-4 overflow-y-auto">
      <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
      {/*Cart items will be listed here*/}
+     <CartContents />
     </div>
+
     {/*Checkout button fixed at the bottom*/}
     <div className="p-4 bg-white">
      <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">
