@@ -1,16 +1,103 @@
-# React + Vite
+# ShopSphere Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ShopSphere is a React + Vite storefront frontend for a fashion e-commerce experience. The current app includes a customer-facing home page with a hero section, gender-based collection entry points, new-arrival product browsing, navigation, search, cart drawer UI, and shared layout components.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- Vite 8
+- React Router
+- Tailwind CSS
+- React Icons
+- ESLint
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Follow these steps to run the frontend locally.
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Install Node.js and npm before starting. Node.js 20 or newer is recommended.
+
+### Installation
+
+From the project root:
+
+```bash
+cd frontend
+npm install
+```
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+Vite will start the app and print a local URL in the terminal, usually:
+
+```text
+http://localhost:5173/
+```
+
+Open that URL in your browser to view the ShopSphere frontend.
+
+## Available Scripts
+
+```bash
+npm run dev
+```
+
+Starts the Vite development server with hot module replacement.
+
+```bash
+npm run build
+```
+
+Builds the production-ready frontend into the `dist` folder.
+
+```bash
+npm run preview
+```
+
+Serves the production build locally for previewing.
+
+```bash
+npm run lint
+```
+
+Runs ESLint checks across the frontend source files.
+
+## Project Structure
+
+```text
+frontend/
+  public/              Static public assets
+  src/
+    assets/            Images used by the storefront
+    components/
+      Cart/            Cart display components
+      Common/          Header, footer, navbar, and search UI
+      Layout/          Page layout, hero, topbar, and cart drawer
+      Products/        Product and collection sections
+    pages/             Route-level pages
+    App.jsx            App routing setup
+    main.jsx           React entry point
+    index.css          Global styles and Tailwind imports
+  index.html           Vite HTML entry
+  package.json         Frontend dependencies and scripts
+  tailwind.config.js   Tailwind CSS configuration
+  vite.config.js       Vite configuration
+```
+
+## Current Routes
+
+- `/` - Home page
+
+More storefront routes, such as product details, product listing, login, and checkout pages, can be added in `src/App.jsx`.
+
+## Notes
+
+- Product data in the new-arrivals section is currently static sample data.
+- Some product images are loaded from `picsum.photos`, so those images require an internet connection while developing.
+- Storefront image assets live in `src/assets`.
