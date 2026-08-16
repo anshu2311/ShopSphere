@@ -101,5 +101,3 @@ More storefront routes, such as product details, product listing, login, and che
 - Product data in the new-arrivals section is currently static sample data.
 - Some product images are loaded from `picsum.photos`, so those images require an internet connection while developing.
 - Storefront image assets live in `src/assets`.
-
-how about some changes
