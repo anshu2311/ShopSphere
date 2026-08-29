@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     //simulate fetching orders
@@ -52,6 +54,10 @@ const MyOrdersPage = () => {
     }, 1000);
 
   }, []);
+  
+  const handleRowClick = (orderId) => {
+    navigate(`/order/${orderId}`);
+  }
 
   return (
     <div className='w-full'>
@@ -72,7 +78,11 @@ const MyOrdersPage = () => {
          <tbody>
           {orders.length > 0 ?(
             orders.map((order) => (
-              <tr key={order._id} className='border-b hover:bg-gray-50 cursor-pointer'>
+              <tr
+                key={order._id}
+                onClick={() => handleRowClick(order._id)}
+                className='border-b hover:bg-gray-50 cursor-pointer'
+              >
                 <td className='py-3 px-4'>
                   <img src={order.orderItems[0].image} alt={order.orderItems[0].name} className='w-12 h-12 object-cover rounded-lg' />
                 </td>

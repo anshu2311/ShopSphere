@@ -8,8 +8,8 @@ import { FiPhoneCall } from "react-icons/fi";
 const Footer = () => {
   return (
    <footer className="border-t py-12">
-    <div className="container mx-auto grid grid-cols-4 gap-8 px-4 lg:px-0">
-     <div>
+    <div className="max-w-6xl mx-auto grid grid-cols-1 gap-8 px-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-start lg:justify-items-center lg:px-8">
+     <div className="w-full max-w-sm lg:max-w-none">
        <h3 className="text-lg text-gray-800 mb-4">Newsletter</h3>
        <p className="text-gray-500 mb-4">
         Be the first to hear about new products, exclusive events and online offers.
@@ -32,7 +32,7 @@ const Footer = () => {
      </div>
 
      {/*Shop links */}
-     <div>
+     <div className="w-full max-w-sm lg:max-w-none">
       <h3 className="text-lg text-gray-800 mb-4">Shop</h3>
       <ul>
        <li>
@@ -58,7 +58,7 @@ const Footer = () => {
       </ul>
      </div>
      {/*Support Links */}
-     <div>
+     <div className="w-full max-w-sm lg:max-w-none">
       <h3 className="text-lg text-gray-800 mb-4">Support</h3>
       <ul>
        <li>
@@ -84,7 +84,7 @@ const Footer = () => {
       </ul>
      </div>
      {/*Follow us */}
-     <div>
+     <div className="w-full max-w-sm lg:max-w-none">
       <h3 className="text-lg text-gray-800 mb-4">Follow Us</h3>
       <div className="flex items-center space-x-4 mb-6">
        <a 
@@ -120,7 +120,7 @@ const Footer = () => {
      </div>
     </div>
     {/*Footer Bottom*/}
-    <div className="container mx-auto mt-12 px-4 lg:px-0 border-t border-gray-200 pt-6">
+    <div className="max-w-6xl mx-auto mt-12 px-4 lg:px-8 border-t border-gray-200 pt-6">
      <p className="text-gray-500 text-sm tracking-tighter text-center">
       © 2026, CompileTab. All Rights Reserved.
      </p>
