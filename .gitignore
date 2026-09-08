@@ -1,3 +1,13 @@
 node_modules/
 dist/
 *.log
+
+# Local environment and credential files
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+secrets/
+credentials/
