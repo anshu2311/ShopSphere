@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const Product = require("./models/Product");
 const User = require("./models/User");
+const Cart = require("./models/Cart");
 const products = require("./data/products");
 const { useReducer } = require("react");
 
@@ -16,6 +17,8 @@ const seedData = async () => {
   //Clear Existing data
   await Product.deleteMany();
   await User.deleteMany();
+  await Cart.deleteMany();
+
 
   // Create a default admin User 
   const createdUser = await User.create({
@@ -35,7 +38,7 @@ const seedData = async () => {
   //Insert the products into the database
   await Product.insertMany(sampleProducts);
 
-  console.log("roduct data seeded successfully!");
+  console.log("Product data seeded successfully!");
   process.exit();
  } catch (error) {
   console.error("Error sending the data:", error);
