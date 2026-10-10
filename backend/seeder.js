@@ -1,19 +1,17 @@
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const Product = require("./models/Product");
 const User = require("./models/User");
 const Cart = require("./models/Cart");
 const products = require("./data/products");
-const { useReducer } = require("react");
+const connectDB = require("./config/db");
 
 dotenv.config();
-
-// connect to mongoDB
-mongoose.connect(process.env.MONGO_URI);
 
 // Function to seed data
 const seedData = async () => {
  try {
+  await connectDB();
+
   //Clear Existing data
   await Product.deleteMany();
   await User.deleteMany();
