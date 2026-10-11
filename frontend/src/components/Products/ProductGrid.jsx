@@ -1,7 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const ProductGrid = ({products}) => {
+export const ProductGrid = ({products, loading, error}) => {
+  if (loading) {
+    return <p>Loading...</p>
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>
+  }
   return (
    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" >
     {products.map((product, index) => (
