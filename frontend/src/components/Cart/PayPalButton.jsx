@@ -19,7 +19,7 @@ const PayPalButton = ({ amount, onSuccess, onError }) => {
               {
                 amount: {
                   currency_code: "USD",
-                  value: Number(amount).toFixed(2),
+                  value: parseFloat(amount).toFixed(2),
                 },
               },
             ],

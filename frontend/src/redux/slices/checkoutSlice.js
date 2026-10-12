@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { RiEjectFill } from "react-icons/ri";
 
 // Async thunk to create a checkout session
 export const createCheckout = createAsyncThunk(
@@ -11,13 +10,13 @@ export const createCheckout = createAsyncThunk(
    checkoutdata,
    {
     headers: {
-     Authorization: `Bearer ${localStorage.getItem(userToken)}`,
+     Authorization: `Bearer ${localStorage.getItem("userToken")}`,
     },
    }
   );
   return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data)
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to create checkout");
   }
  }
 );
@@ -42,7 +41,7 @@ const checkoutSlice = createSlice({
   })
   .addCase(createCheckout.rejected, (state, action) => {
    state.loading = false;
-   state.error = action.error.message;
+   state.error = action.payload || action.error.message;
   })
  },
 });

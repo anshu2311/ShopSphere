@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// AsynccThunk to fetch Products by collection and optional Fi;ters
+// AsynccThunk to fetch Products by collection and optional Filters
 export const fetchProductsByFilters = createAsyncThunk(
   'products/fetchByFilters',
   async({

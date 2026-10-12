@@ -12,7 +12,7 @@ localStorage.setItem('guestId', InitialGuestId);
 
 // Initial state for the auth slice
 const initialState = {
-  userInfo: userFormStorage,
+  user: userFormStorage,
   guestId: InitialGuestId,
   loading: false,
   error: null,
@@ -60,7 +60,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.userInfo = null;
+      state.user = null;
       state.guestId = `guest_${new Date().getTime()}`; //Reset the guest ID on logout
       localStorage.removeItem('userInfo');
       localStorage.removeItem('userToken');
@@ -79,7 +79,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -91,7 +91,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.user = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

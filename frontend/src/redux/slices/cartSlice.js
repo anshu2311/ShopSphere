@@ -25,8 +25,10 @@ export const fetchCart = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.error(error);
-      return rejectWithValue('Failed to fetch cart');
+      if (error.response?.status === 404) {
+        return { products: [], totalPrice: 0 };
+      }
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -101,11 +103,11 @@ export const removeFromCart = createAsyncThunk(
 // Merge guest Cart into User cart
 export const mergeCart = createAsyncThunk(
   "cart/mergeCart",
-  async({ guestId, userId}, {rejectWithValue}) => {
+  async({ guestId, user }, {rejectWithValue}) => {
     try {
         const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/cart/merge`,
-        {guestId, userId},
+        {guestId, user},
         {
           headers: {
           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
@@ -146,7 +148,7 @@ const cartSlice = createSlice({
     })
     .addCase(fetchCart.rejected, (state, action) => {
      state.loading = false;
-     state.error = action.error.message || "Failed to fetch the cart";
+     state.error = action.payload || action.error.message || "Failed to fetch the cart";
     })
     .addCase(addToCart.pending, (state) => {
      state.loading = true;
@@ -197,7 +199,6 @@ const cartSlice = createSlice({
     .addCase(mergeCart.fulfilled, (state, action) => {
      state.loading = false;
      state.cart = action.payload;
-     state.error = null;
      saveCartToStorage(action.payload);
     })
     .addCase(mergeCart.rejected, (state, action) => {

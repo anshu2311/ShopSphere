@@ -1,13 +1,50 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import login from "../assets/login.webp";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginUser } from "../redux/slices/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, mergeCart } from "../redux/slices/cartSlice";
+import { toast } from "sonner";
 
 const Login = () => {
  const [email, setEmail] = useState("");
  const [password, setPassword] = useState("");
  const dispatch = useDispatch();
+ const navigate = useNavigate();
+ const location = useLocation();
+ const { user, guestId, loading } = useSelector( (state) => state.auth );
+ const { cart } = useSelector( (state) => state.cart );
+ const syncedUserId = useRef(null);
+
+ // get redirect parameter and check if it is checkout or something
+ const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+ const isCheckoutRedirect = redirect.includes("checkout");
+
+ useEffect(() => {
+  if (!user) {
+    syncedUserId.current = null;
+    return;
+  }
+
+  if (syncedUserId.current === user._id) return;
+  syncedUserId.current = user._id;
+
+  const syncCartAndNavigate = async () => {
+    try {
+      if (cart?.products?.length > 0 && guestId) {
+        await dispatch(mergeCart({ guestId, user })).unwrap();
+      } else {
+        await dispatch(fetchCart({ userId: user._id })).unwrap();
+      }
+      navigate(isCheckoutRedirect ? "/checkout" : "/");
+    } catch (error) {
+      syncedUserId.current = null;
+      toast.error(error?.message || "Unable to load your cart. Please try again.");
+    }
+  };
+
+  syncCartAndNavigate();
+ }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
  const handleSubmit = (e) => {
   e.preventDefault();
@@ -49,11 +86,11 @@ const Login = () => {
        type="submit" 
        className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
       >
-       Sign In
+       {loading ? "Loading..." : "Sign In"}
       </button>
       <p className="mt-6 text-center tex-sm">
        Don't have an account?{" "}
-       <Link to="/register" className="text-blue-500">
+       <Link to={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-blue-500">
         Register
        </Link>
       </p>
