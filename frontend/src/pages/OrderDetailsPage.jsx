@@ -1,41 +1,23 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {fetchOrderDetails} from "../redux/slices/orderSlice";
 
 const OrderDetailsPage = () => {
   const {id} = useParams();
-  const [orderDetails, setOrderDetails] = useState(null);
-
+  const dispatch = useDispatch();
+  const { orderDetails, loading, error } = useSelector((status) => status.orders);
+  
   useEffect(() => {
-    const mockOrderDetails = {
-      _id: id,
-      createdAt: new Date(),
-      isPaid: true,
-      isDelivered: false,
-      paymentMode: "PayPal",
-      ShippingMode: "Standard",
-      ShippingAddress: {city: "Hyderabad", Country: "India"},
-      OrderItems: [
-        {
-          productId: "1",
-          name: "Jacket",
-          price: 20,
-          quantity: 2,
-          image: "https://picsum.photos/150?random=1",
-        }, 
-        {
-          productId: "2",
-          name: "Shirt",
-          price: 200,
-          quantity: 1,
-          image: "https://picsum.photos/150?random=2",
-        },
-      ]
-    };
-    setOrderDetails(mockOrderDetails);
-  }, [id]);
+    dispatch(fetchOrderDetails(id));
+  }, [dispatch, id]);
+
+  if(loading) return <p>Loading...</p>
+  if(error) return <p>Error: {error}</p>
+
  return (
-  <div className="max-w-7xl mx-ato p-4 sm:p-6">
+  <div className="max-w-7xl mx-auto p-4 sm:p-6">
     <h2 className="text-2xl md:text-3xl font-bold mb-6">Order Details</h2>
     {!orderDetails ? (
       <p>No Order details found</p>
@@ -46,10 +28,12 @@ const OrderDetailsPage = () => {
           <div className="flex flex-col sm:flex-row justify-between mb-8">
             <div>
               <h3 className="text-lg md:text-xl font-semibold">
-                Orrder ID: #{orderDetails._id }
+                Order ID: #{orderDetails._id}
               </h3>
               <p className="text-gray-600">
-                {new Date(orderDetails.createdAt).toLocaleDateString()}
+                {orderDetails.createdAt
+                  ? new Date(orderDetails.createdAt).toLocaleDateString()
+                  : "Date unavailable"}
               </p>
             </div>
             <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0">
@@ -73,15 +57,24 @@ const OrderDetailsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
             <div>
               <h4 className="text-lg font-semibold mb-2">Payment Info</h4>
-              <p>Payment Method: {orderDetails.paymentMode}</p>
+              <p>Payment Method: {orderDetails.paymentMethod || "N/A"}</p>
               <p>Status: {orderDetails.isPaid ? "Paid" : "Unpaid"}</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-2">Shipping Info</h4>
-              <p>Shipping Method: {orderDetails.ShippingMode}</p>
               <p>
-                Address: {" "} 
-                {`${orderDetails.ShippingAddress.city}, ${orderDetails.ShippingAddress.Country}`}</p>
+                Address:{" "}
+                {orderDetails.shippingAddress
+                  ? [
+                      orderDetails.shippingAddress.address,
+                      orderDetails.shippingAddress.city,
+                      orderDetails.shippingAddress.postalCode,
+                      orderDetails.shippingAddress.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "N/A"
+                  : "N/A"}
+              </p>
             </div>
           </div>
           {/*Product list */}
@@ -97,7 +90,7 @@ const OrderDetailsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {orderDetails.OrderItems.map((item)=> (
+                {(orderDetails.orderItems || []).map((item) => (
                  <tr key={item.productId} className="border-b">
                   <td className="py-2 px-4 flex items-center">
                     <img 
@@ -117,6 +110,13 @@ const OrderDetailsPage = () => {
                   <td className="py-2 px-4">${item.price * item.quantity}</td>
                  </tr>
                 ))}
+                {(!orderDetails.orderItems || orderDetails.orderItems.length === 0) && (
+                  <tr>
+                    <td className="py-4 px-4 text-center" colSpan={4}>
+                      No products found for this order.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -1,66 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import {fetchUserOrders} from "../redux/slices/orderSlice";
 
 const MyOrdersPage = () => {
-  const [orders, setOrders] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {orders, loading, error } = useSelector((state) => state.orders);
 
   useEffect(() => {
-    //simulate fetching orders
-    setTimeout(() => {
-      const mockOrders = [
-       {
-        _id: "1234",
-        createdAt: new Date(),
-        ShippingAddress: {city:"Delhi", country: "India"},
-        orderItems: [
-         {
-          name: "product1",
-          image: "https://picsum.photos/500/500?random=1"
-         },
-        ],
-        totalPrice: 100,
-        isPaid: true,
-       },
-       {
-        _id: "5678",
-        createdAt: new Date(),
-        ShippingAddress: {city:"Hyderabad", country: "India"},
-        orderItems: [
-         {
-          name: "product2",
-          image: "https://picsum.photos/500/500?random=2"
-         },
-        ],
-        totalPrice: 50,
-        isPaid: false,
-       },
-       {
-        _id: "4321",
-        createdAt: new Date(),
-        ShippingAddress: {city:"Bilaspur", country: "India"},
-        orderItems: [
-         {
-          name: "product3",
-          image: "https://picsum.photos/500/500?random=3"
-         },
-        ],
-        totalPrice: 200,
-        isPaid: true,
-       },
-      ];
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
 
-      setOrders(mockOrders)
-    }, 1000);
-
-  }, []);
-  
   const handleRowClick = (orderId) => {
     navigate(`/order/${orderId}`);
   }
 
+  if(loading) return <p>Loading...</p>
+  if(error) return <p>Error: {error}</p>
+
   return (
-    <div className='w-full'>
+    <div className='w-full max-w-7xl mx-auto p-4 sm:p-6'>
       <h2 className='text-xl sm:text-2xl font-bold mb-5'>My Orders</h2>
       <div className='relative shadow-md rounded-lg overflow-x-auto'>
         <table className='min-w-full text-left text-sm text-gray-500'>
@@ -92,7 +52,14 @@ const MyOrdersPage = () => {
                   {new Date(order.createdAt).toLocaleTimeString()}
                 </td>
                 <td className='py-3 px-4 whitespace-nowrap'>
-                  {order.ShippingAddress ? `${order.ShippingAddress.city}, ${order.ShippingAddress.country}` : "N/A"}
+                  {order.shippingAddress
+                    ? [
+                        order.shippingAddress.city,
+                        order.shippingAddress.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ") || "N/A"
+                    : "N/A"}
                 </td>
                 <td className='py-3 px-4'>
                  {order.orderItems.length}
