@@ -1,45 +1,96 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  fetchProductDetails,
+  updateProduct,
+} from "../../redux/slices/productsSlice";
 
 const EditProductPage = () => {
- const [productData, setProductData] = useState({
-  name: "",
-  description: "",
-  price: 0,
-  sku: "",
-  countInStock: 0,
-  category: "",
-  brand: "",
-  sizes: [],
-  colors: [],
-  collection: "",
-  material: "",
-  gender: "",
-  images: [
-   {
-    url: "https://picsum.photos/150?random=1",
+ const dispatch = useDispatch();
+ const navigate = useNavigate();
+ const {id} = useParams();
+ const { selectedProduct, loading, error } = useSelector((state) => state.products);
+ const [productEdits, setProductEdits] = useState({});
+ const [ uploading, setUploading ] = useState(false);
+ const [uploadError, setUploadError] = useState("");
+
+ const productData = selectedProduct ? {
+  ...selectedProduct,
+  collection: selectedProduct.collections || "",
+  sizes: selectedProduct.sizes || [],
+  colors: selectedProduct.colors || [],
+  images: selectedProduct.images || [],
+  ...productEdits[id],
+} : null;
+
+ useEffect(() => {
+  if (id) {
+   dispatch(fetchProductDetails(id));
+  }
+ }, [dispatch, id]);
+
+ const updateProductField = (name, value) => {
+  setProductEdits((edits) => ({
+   ...edits,
+   [id]: {
+    ...edits[id],
+    [name]: value,
    },
-   {
-    url: "https://picsum.photos/150?random=2",
-   },
-  ],
- });
+  }));
+ };
 
  const handleChange = (e) => {
   const { name, value } = e.target;
-  setProductData({
-   ...productData,
-   [name]: value,
-  });
+  updateProductField(name, value);
  }
 
  const handleImageUpload = async (e) => {
   const file = e.target.files[0];
-  console.log("Uploading image:", file);
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+   setUploading(true);
+   setUploadError("");
+   const {data} = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
+    formData
+   );
+   updateProductField("images", [
+    ...productData.images,
+    { url: data.url, altext: "" },
+   ]);
+   setUploading(false);
+  } catch (error) {
+   console.error(error);
+   setUploadError(error.response?.data?.message || "Image upload failed.");
+   setUploading(false);
+  }
  };
 
- const handleSubmit = (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log("Updated Product Data:", productData);
+  const result = await dispatch(updateProduct({
+   id,
+   productData: {
+    ...productData,
+    collections: productData.collection,
+   },
+  }));
+
+  if (updateProduct.fulfilled.match(result)) {
+   navigate("/admin/products");
+  }
+ };
+ 
+ if (loading) return <p>Loading...</p>;
+ if (error) return <p>Error: {error}</p>;
+ if (!productData || String(selectedProduct._id) !== String(id)) {
+  return <p>Loading product...</p>;
  }
 
  return (
@@ -118,6 +169,17 @@ const EditProductPage = () => {
       required
      />
     </div>
+    <div className="mb-6">
+      <label className="block font-semibold mb-2">Collection</label>
+      <input
+       type="text"
+       name="collection"
+       value={productData.collection}
+       onChange={handleChange}
+       className="w-full border border-gray-300 rounded-md py-2 px-4"
+       required
+      />
+    </div>
     {/*Sizes */}
     <div className="mb-6">
      <label className="block font-semibold mb-2">Sizes (comma-separated)</label>  
@@ -125,7 +187,7 @@ const EditProductPage = () => {
       type="text"
       name="sizes"  
       value={productData.sizes.join(", ")}
-      onChange={(e) => setProductData({...productData, sizes: e.target.value.split(",").map(size => size.trim())})}
+      onChange={(e) => updateProductField("sizes", e.target.value.split(",").map(size => size.trim()))}
       className="w-full border border-gray-300 rounded-md py-2 px-4"
       required
      />
@@ -137,7 +199,7 @@ const EditProductPage = () => {
       type="text"
       name="colors"  
       value={productData.colors.join(", ")}
-      onChange={(e) => setProductData({...productData, colors: e.target.value.split(",").map(color => color.trim())})}
+      onChange={(e) => updateProductField("colors", e.target.value.split(",").map(color => color.trim()))}
       className="w-full border border-gray-300 rounded-md py-2 px-4"
       required
      />
@@ -149,6 +211,8 @@ const EditProductPage = () => {
       type="file"
       onChange={handleImageUpload}
      />
+     { uploading && <p>Uploading image...</p> }
+     { uploadError && <p className="text-red-500">{uploadError}</p> }
      <div className="flex gap-4 mt-4">
       {productData.images.map((image, index) => (
        <div key={index}>

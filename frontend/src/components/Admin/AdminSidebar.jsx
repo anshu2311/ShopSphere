@@ -18,8 +18,9 @@ const AdminSidebar = () => {
   return (
     <div className="p-6">
       <div>
-        <Link to="/admin" className="text-2xl font-medium">
-        ShopSphere
+        <Link to="/admin" className="flex items-center gap-2 text-2xl font-medium">
+        <img src="/shopsphere-mark.png" alt="" className="h-10 w-10 object-contain" />
+        <span>ShopSphere</span>
         </Link>
       </div>
       <h2 className="text-xl font-medium mb-4 mt-6 text-center">Admin Dashboard</h2>

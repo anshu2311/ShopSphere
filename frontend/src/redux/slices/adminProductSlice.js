@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
-const USER_TOKEN= `Bearer ${localStorage.getItem("userToken")}`;
+const getAuthHeaders = () => {
+ const token = localStorage.getItem("userToken");
+ return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 //async thunk to fetch admin products 
 export const fetchAdminProducts = createAsyncThunk(
@@ -10,9 +13,7 @@ export const fetchAdminProducts = createAsyncThunk(
  async() => {
   const response = await axios.get(`${API_URL}/api/admin/products`,
   {
-   headers: {
-    Authorization: USER_TOKEN,
-   }
+   headers: getAuthHeaders(),
   }
   );
   return response.data;
@@ -27,9 +28,7 @@ export const createProduct = createAsyncThunk(
    `${API_URL}/api/admin/products`,
    productData,
    {
-    headers: {
-     Authorization: USER_TOKEN,
-    },
+    headers: getAuthHeaders(),
    }
   );
   return response.data;
@@ -44,9 +43,7 @@ export const updateProduct = createAsyncThunk(
    `${API_URL}/api/admin/products/${id}`,
    productData,
    {
-    headers: {
-     Authorization: USER_TOKEN,
-    },
+    headers: getAuthHeaders(),
    }
   );
   return response.dats;
@@ -56,16 +53,18 @@ export const updateProduct = createAsyncThunk(
 //Assync thunk to delete th eproduct 
 export const deleteProduct = createAsyncThunk(
  "adminProducts/deleteProduct",
- async(id) => {
-  const response = await axios.delete(
-   `${API_URL}/api/admin/products/${id}`,
-   {
-    headers: {
-     Authorization: USER_TOKEN,
-    },
-   }
-  );
-  return id;
+ async(id, { rejectWithValue }) => {
+  try {
+   await axios.delete(
+    `${API_URL}/api/products/${id}`,
+    {
+     headers: getAuthHeaders(),
+    }
+   );
+   return id;
+  } catch (error) {
+   return rejectWithValue(error.response?.data?.message || error.message);
+  }
  }
 );
 
@@ -105,10 +104,19 @@ const adminProductSlice = createSlice({
    }
   })
   //Delete product
+  .addCase(deleteProduct.pending, (state) => {
+   state.loading = true;
+   state.error = null;
+  })
   .addCase(deleteProduct.fulfilled, (state, action) => {
+   state.loading = false;
    state.products = state.products.filter(
-    (product) => product._id !== action,payload 
+    (product) => product._id !== action.payload
    );
+  })
+  .addCase(deleteProduct.rejected, (state, action) => {
+   state.loading = false;
+   state.error = action.payload || action.error.message;
   });
  },
 });

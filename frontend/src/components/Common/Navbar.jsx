@@ -34,8 +34,9 @@ const Navbar = () => {
    <nav className="container mx-auto flex justify-between items-center py-4 px-6">
    {/*leftLogo*/}
    <div>
-    <Link to="/" className="text-2xl font-medium">
-     ShopSphere
+    <Link to="/" className="flex items-center gap-2 text-2xl font-medium">
+     <img src="/shopsphere-mark.png" alt="" className="h-10 w-10 object-contain" />
+     <span>ShopSphere</span>
     </Link>
    </div>
    {/*center navigation links*/}

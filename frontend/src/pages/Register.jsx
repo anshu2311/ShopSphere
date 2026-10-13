@@ -42,7 +42,10 @@ const Register = () => {
     <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-12">
      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-lg border shadow-sm">
       <div className="flex justify-center mb-6">
-       <h2 className="text-xl font-medium">ShopSphere</h2>
+       <h2 className="flex items-center gap-2 text-xl font-medium">
+        <img src="/shopsphere-mark.png" alt="" className="h-10 w-10 object-contain" />
+        <span>ShopSphere</span>
+       </h2>
       </div>
       <h2 className="text-2xl font-bold text-center mb-6">Hey! There</h2>
       <p className="text-center mb-6">

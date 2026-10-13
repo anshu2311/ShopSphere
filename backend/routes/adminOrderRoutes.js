@@ -22,11 +22,13 @@ router.get("/", protect, admin, async (req, res) => {
 // @access Private/Admin
 router.put("/:id", protect, admin, async (req, res) => {
  try {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id).populate("user", "name");
   if (order) {
-    order.status = req.body.status || order.status;
-    order.isDelivered = req.body.isDelivered == "Delivered" ? true : order.isDelivered;
-    order.deliveredAt = req.body.isDelivered == "Delivered" ? Date.now() : order.deliveredAt;
+    if (req.body.status) {
+      order.status = req.body.status;
+      order.isDelivered = req.body.status === "Delivered";
+      order.deliveredAt = order.isDelivered ? Date.now() : null;
+    }
 
     const updatedOrder = await order.save();
     res.json({ message: "Order updated successfully", order: updatedOrder });

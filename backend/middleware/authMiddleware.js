@@ -2,24 +2,32 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 // Middleware to protect routes
-const protect = async (req, resizeBy, next) => {
- let token;
+const protect = async (req, res, next) => {
+ const authorization = req.headers.authorization;
+ const [scheme, token] = authorization?.split(" ") || [];
 
- if(
-  req.headers.authorization && req.headers.authorization.startsWith("Bearer")
- ) {
-  try {
-   token = req.headers.authorization.split(" ")[1];
-   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+ if (scheme?.toLowerCase() !== "bearer" || !token) {
+  return res.status(401).json({ message: "Not authorized, token required" });
+ }
 
-   req.user = await  User.findById(decoded.user.id).select("-password"); //exclude password
-   next();
-  } catch (error) {
-   console.error("Token verification failed:", error);
-   res.status(401).json({message: "Not authorize, token failed"});
+ let decoded;
+ try {
+  decoded = jwt.verify(token, process.env.JWT_SECRET);
+ } catch (error) {
+  if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+   return res.status(401).json({ message: "Not authorized, token invalid or expired" });
   }
- } else{
-  res.status(401).json({message: "Not authorize, token failed"});
+  return next(error);
+ }
+
+ try {
+  req.user = await User.findById(decoded.user.id).select("-password");
+  if (!req.user) {
+   return res.status(401).json({ message: "Not authorized, user no longer exists" });
+  }
+  return next();
+ } catch (error) {
+  return next(error);
  }
 };
 
