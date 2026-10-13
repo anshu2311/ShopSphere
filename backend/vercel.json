@@ -1,0 +1,16 @@
+{
+ "version": 2,
+ "name": "shopsphere-backend",
+ "builds": [
+  {
+    "src": "server.js",
+    "use": "@vercel/node"
+  }
+ ],
+ "routes": [
+  {
+   "src": "/(.*)",
+   "dest": "server.js"
+  }
+ ]
+}
